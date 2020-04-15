@@ -1,7 +1,7 @@
-# From https://lists.x.org/archives/xorg-announce/2019-March/002967.html
-md5 0a95c1c8158d658bd0b3ac38a1b31382  xf86-video-ati-19.0.0.tar.bz2
-sha1 c7bb5d25ca725b8fa625a5f1a6948433e51b98a5  xf86-video-ati-19.0.0.tar.bz2
-sha256 dd907d318884bb6e81e7e62da7bb34af26aeeed3a81c21e0b46a4f3cae3ff457  xf86-video-ati-19.0.0.tar.bz2
-sha512 0674c8befa926fd3b431ce80d90f2cd0de17314efe7fd3a5ed0d78018d6cd32625b514bf68436a47eb15e5ad4b50317f3c09fd687b77e69a067d1210ee459827  xf86-video-ati-19.0.0.tar.bz2
+# From https://lists.x.org/archives/xorg-announce/2019-October/003027.html
+md5 6e49d3c2839582af415ceded76e626e6  xf86-video-ati-19.1.0.tar.bz2
+sha1 aea1d11c05531b03f2eb67c6785cddf6d7f30e5f  xf86-video-ati-19.1.0.tar.bz2
+sha256 659f5a1629eea5f5334d9b39b18e6807a63aa1efa33c1236d9cc53acbb223c49  xf86-video-ati-19.1.0.tar.bz2
+sha512 73a81f6c492daf2e89067fb52b3033dc0fe6841f109627ddca1aee54a45a738c8c134443753a2a2aaa2c131e1d560057ebc76351ff2304c16407df3ff568fcd6  xf86-video-ati-19.1.0.tar.bz2
 # Locally computed
 sha256 58847c8e97190c401afa84b3f0b8b147379c876a184e99af2cb51bfd40ac8936  COPYING

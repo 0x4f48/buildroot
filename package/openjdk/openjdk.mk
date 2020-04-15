@@ -4,16 +4,18 @@
 #
 ################################################################################
 
-OPENJDK_VERSION_MAJOR = 11.0.2
-OPENJDK_VERSION_MINOR = 9
-OPENJDK_VERSION = jdk-$(OPENJDK_VERSION_MAJOR)+$(OPENJDK_VERSION_MINOR)
-OPENJDK_SITE = $(call github,AdoptOpenJDK,openjdk-jdk11u,$(OPENJDK_VERSION))
+OPENJDK_VERSION_MAJOR = 14
+OPENJDK_VERSION_MINOR = 36
+OPENJDK_VERSION = $(OPENJDK_VERSION_MAJOR)+$(OPENJDK_VERSION_MINOR)
+OPENJDK_SOURCE = jdk-$(OPENJDK_VERSION).tar.gz
+OPENJDK_SITE = https://hg.openjdk.java.net/jdk-updates/jdk14u/archive
 OPENJDK_LICENSE = GPL-2.0+ with exception
 OPENJDK_LICENSE_FILES = LICENSE
 
 # OpenJDK requires Alsa, cups, and X11 even for a headless build.
 # host-zip is needed for the zip executable.
 OPENJDK_DEPENDENCIES = \
+	host-gawk \
 	host-openjdk-bin \
 	host-pkgconf \
 	host-zip \
@@ -26,6 +28,7 @@ OPENJDK_DEPENDENCIES = \
 	lcms2 \
 	libpng \
 	libusb \
+	xlib_libXrandr \
 	xlib_libXrender \
 	xlib_libXt \
 	xlib_libXtst \
@@ -33,16 +36,15 @@ OPENJDK_DEPENDENCIES = \
 
 # JVM variants
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_CLIENT),y)
-OPENJDK_JVM_VARIANTS += client
+OPENJDK_JVM_VARIANT = client
 endif
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_SERVER),y)
-OPENJDK_JVM_VARIANTS += server
+OPENJDK_JVM_VARIANT = server
 endif
 ifeq ($(BR2_PACKAGE_OPENJDK_JVM_VARIANT_ZERO),y)
-OPENJDK_JVM_VARIANTS += zero
+OPENJDK_JVM_VARIANT = zero
 OPENJDK_DEPENDENCIES += libffi
 endif
-OPENJDK_JVM_VARIANT_LIST = $(subst $(space),$(comma),$(OPENJDK_JVM_VARIANTS))
 
 # OpenJDK ignores some variables unless passed via the environment.
 # These variables are PATH, LD, CC, CXX, and CPP.
@@ -68,13 +70,14 @@ OPENJDK_CONF_OPTS = \
 	--enable-unlimited-crypto \
 	--openjdk-target=$(GNU_TARGET_NAME) \
 	--with-boot-jdk=$(HOST_DIR) \
+	--with-stdc++lib=dynamic \
 	--with-debug-level=release \
 	--with-devkit=$(HOST_DIR) \
 	--with-extra-cflags="$(TARGET_CFLAGS)" \
 	--with-extra-cxxflags="$(TARGET_CXXFLAGS)" \
 	--with-giflib=system \
 	--with-jobs=$(PARALLEL_JOBS) \
-	--with-jvm-variants=$(OPENJDK_JVM_VARIANT_LIST) \
+	--with-jvm-variants=$(OPENJDK_JVM_VARIANT) \
 	--with-lcms=system \
 	--with-libjpeg=system \
 	--with-libpng=system \
@@ -82,15 +85,12 @@ OPENJDK_CONF_OPTS = \
 	--with-native-debug-symbols=none \
 	--without-version-pre \
 	--with-sysroot=$(STAGING_DIR) \
-	--with-vendor-name="AdoptOpenJDK" \
-	--with-vendor-url="https://adoptopenjdk.net/" \
-	--with-vendor-version-string="AdoptOpenJDK" \
 	--with-version-build="$(OPENJDK_VERSION_MAJOR)" \
 	--with-version-string="$(OPENJDK_VERSION_MAJOR)"
 
 # If building for AArch64, use the provided CPU port.
 ifeq ($(BR2_aarch64),y)
-OPENJDK_CONF_OPTS += --with-cpu-port=aarch64 --with-abi-profile=aarch64
+OPENJDK_CONF_OPTS += --with-abi-profile=aarch64
 endif
 
 ifeq ($(BR2_CCACHE),y)
@@ -108,7 +108,7 @@ endef
 # Make -jn is unsupported. Instead, set the "--with-jobs=" configure option,
 # and use $(MAKE1).
 define OPENJDK_BUILD_CMDS
-	$(MAKE1) -C $(@D) legacy-jre-image
+	$(TARGET_MAKE_ENV) $(MAKE1) -C $(@D) legacy-jre-image
 endef
 
 # Calling make install always builds and installs the JDK instead of the JRE,

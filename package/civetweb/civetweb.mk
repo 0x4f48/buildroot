@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-CIVETWEB_VERSION = v1.11
-CIVETWEB_SITE = $(call github,civetweb,civetweb,$(CIVETWEB_VERSION))
+CIVETWEB_VERSION = 1.12
+CIVETWEB_SITE = $(call github,civetweb,civetweb,v$(CIVETWEB_VERSION))
 CIVETWEB_LICENSE = MIT
 CIVETWEB_LICENSE_FILES = LICENSE.md
 
@@ -32,10 +32,16 @@ endif
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 CIVETWEB_COPT += -DNO_SSL_DL
-CIVETWEB_LIBS += -lssl -lcrypto -lz
-CIVETWEB_DEPENDENCIES += openssl
+CIVETWEB_LIBS += `$(PKG_CONFIG_HOST_BINARY) --libs openssl`
+CIVETWEB_DEPENDENCIES += openssl host-pkgconf
 else
 CIVETWEB_COPT += -DNO_SSL
+endif
+
+ifeq ($(BR2_PACKAGE_ZLIB),y)
+CIVETWEB_CONF_OPTS += WITH_ZLIB=1
+CIVETWEB_LIBS += -lz
+CIVETWEB_DEPENDENCIES += zlib
 endif
 
 ifeq ($(BR2_PACKAGE_CIVETWEB_SERVER),y)
@@ -55,7 +61,6 @@ endif
 ifeq ($(BR2_SHARED_LIBS)$(BR2_STATIC_SHARED_LIBS),y)
 CIVETWEB_BUILD_TARGETS += slib
 CIVETWEB_INSTALL_TARGETS += install-slib
-CIVETWEB_COPT += -fPIC
 endif
 
 endif # BR2_PACKAGE_CIVETWEB_LIB
